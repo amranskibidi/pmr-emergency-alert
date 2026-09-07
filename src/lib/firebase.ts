@@ -13,40 +13,45 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const requestForToken = async () => {
-  if (typeof window === 'undefined' || !('Notification' in window)) {
-    alert('Browser kamu tidak mendukung Notifikasi.');
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    alert('Browser ini tidak mendukung Service Worker / Push Notification.');
     return null;
   }
 
   try {
-    // 1. Minta Izin
+    // 1. Minta Izin Notifikasi
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
-      alert('Izin ditolak! Buka Titik 3 di Chrome -> Setelan Situs -> Notifikasi -> Izinkan.');
+      alert('Izin ditolak! Mohon izinkan notifikasi di setelan Chrome HP.');
       return null;
     }
 
-    // 2. Register Service Worker
-    const swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    // 2. Pastikan Service Worker terdaftar dan SIAP (ready)
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      scope: '/'
+    });
+    
+    // Tunggu sampai SW benar-benar aktif
+    await navigator.serviceWorker.ready;
 
-    // 3. Ambil Messaging & Token
+    // 3. Ambil Messaging Instance & Token FCM
     const messaging = getMessaging(app);
     const token = await getToken(messaging, {
       vapidKey: 'BGvU0r-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxb06GU0hs8dHs0Ro',
-      serviceWorkerRegistration: swRegistration
+      serviceWorkerRegistration: registration,
     });
 
     if (token) {
-      alert('BERHASIL! Token FCM terbit.');
+      alert('BERHASIL! Token FCM terbit 🎉');
       console.log('FCM Token:', token);
       return token;
     } else {
-      alert('Gagal mendapatkan token dari Firebase.');
+      alert('Gagal mengambil token. VAPID Key atau SW tidak merespons.');
       return null;
     }
   } catch (err: any) {
-    console.error('Error detail:', err);
-    alert('Detail Error: ' + (err?.message || err));
+    console.error('Error FCM Detail:', err);
+    alert('Error Terjadi: ' + (err?.message || JSON.stringify(err)));
     return null;
   }
 };

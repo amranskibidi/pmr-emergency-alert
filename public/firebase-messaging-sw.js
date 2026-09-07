@@ -13,11 +13,10 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification.title;
+  const notificationTitle = payload.notification.title || 'PMR Alert';
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/icon.png'
+    body: payload.notification.body || 'Ada panggilan darurat!',
+    icon: '/logo-pmr.png'
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
