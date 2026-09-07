@@ -23,7 +23,7 @@ export const requestForToken = async () => {
 
     const messaging = getMessaging(app);
     const currentToken = await getToken(messaging, {
-      vapidKey: 'PASTE_VAPID_KEY_KAMU_DI_SINI',
+      vapidKey: 'BGvUOr-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxbO6GUOhs8dHs0Ro',
       serviceWorkerRegistration: registration,
     });
 
