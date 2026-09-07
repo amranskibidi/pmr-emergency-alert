@@ -12,52 +12,52 @@ function EmergencyForm() {
 
   const sendAlert = async (type: string, title: string) => {
     setLoading(true);
-    setStatus('Mengambil lokasi GPS...');
+    setStatus('Memproses panggilan...');
+
+    const sendData = async (lat: number | null, lng: number | null) => {
+      setStatus('Mengirim sinyal ke PMR...');
+      try {
+        const res = await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type,
+            title,
+            body: `Panggilan dari Kelas ${kelas}! Lokasi terlampir.`,
+            kelas,
+            lat,
+            lng,
+          }),
+        });
+
+        if (res.ok) {
+          setStatus('✅ Panggilan berhasil terkirim!');
+        } else {
+          setStatus('❌ Gagal mengirim panggilan.');
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus('❌ Error koneksi jaringan.');
+      } font-medium {
+        setLoading(false);
+      }
+    };
 
     if (!navigator.geolocation) {
-      alert('Browser tidak mendukung Geolocation');
-      setLoading(false);
+      await sendData(null, null);
       return;
     }
 
+    // Mencoba mengambil lokasi dengan batas waktu (timeout) 4 detik
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        setStatus('Sending alert to PMR...');
-
-        try {
-          const res = await fetch('/api/send-notification', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type,
-              title,
-              body: `Panggilan dari Kelas ${kelas}! Lokasi GPS terlampir.`,
-              kelas,
-              lat: latitude,
-              lng: longitude,
-            }),
-          });
-
-          if (res.ok) {
-            setStatus('Panggilan berhasil terkirim!');
-          } else {
-            setStatus('Gagal mengirim panggilan.');
-          }
-        } catch (err) {
-          console.error(err);
-          setStatus('Error koneksi.');
-        } finally {
-          setLoading(false);
-        }
+      (position) => {
+        sendData(position.coords.latitude, position.coords.longitude);
       },
       (error) => {
-        console.error(error);
-        alert('Gagal mengambil lokasi. Pastikan izin GPS diaktifkan.');
-        setLoading(false);
-        setStatus('');
+        console.warn('Gagal/Lambat mengambil lokasi GPS, tetap mengirim sinyal:', error);
+        sendData(null, null);
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: false, timeout: 4000, maximumAge: 0 }
     );
   };
 
@@ -71,7 +71,7 @@ function EmergencyForm() {
           PANGGILAN KELAS: <span className="text-amber-400">{kelas}</span>
         </h1>
         <p className="text-slate-400 text-xs mt-1">
-          Pilih jenis bantuan di bawah ini untuk mengirim notifikasi & koordinat GPS ke Tim PMR.
+          Tekan tombol di bawah untuk mengirim sinyal & koordinat lokasi ke Tim PMR.
         </p>
       </div>
 
@@ -104,7 +104,7 @@ function EmergencyForm() {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+    <main className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 font-sans">
       <Suspense fallback={<div className="text-white text-center">Loading PMR System...</div>}>
         <EmergencyForm />
       </Suspense>
