@@ -1,39 +1,52 @@
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getMessaging, getToken } from 'firebase/messaging';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCqK_DYIa5R0UI9IgFbwrZDrDafGA2VN6Y",
+  authDomain: "pmr-emergency-app.firebaseapp.com",
+  projectId: "pmr-emergency-app",
+  storageBucket: "pmr-emergency-app.firebasestorage.app",
+  messagingSenderId: "358181156864",
+  appId: "1:358181156864:web:946f4385b6d647b0b4c0e5"
+};
+
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
 export const requestForToken = async () => {
+  if (typeof window === 'undefined' || !('Notification' in window)) {
+    alert('Browser kamu tidak mendukung Notifikasi.');
+    return null;
+  }
+
   try {
-    const supported = await isSupported();
-    if (!supported) {
-      alert('Browser HP ini tidak mendukung Push Notification.');
-      return null;
-    }
-
-    // 1. Minta izin Notifikasi bawaan browser
+    // 1. Minta Izin
     const permission = await Notification.requestPermission();
-    if (permission === 'denied') {
-      alert('Izin terblokir di Chrome HP! Buka Titik Tiga (⋮) -> Setelan -> Setelan Situs -> Notifikasi -> Izinkan.');
-      return null;
-    }
-
     if (permission !== 'granted') {
-      alert('Izin notifikasi tidak diberikan.');
+      alert('Izin ditolak! Buka Titik 3 di Chrome -> Setelan Situs -> Notifikasi -> Izinkan.');
       return null;
     }
 
-    // 2. Daftar Service Worker secara manual
-    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    // 2. Register Service Worker
+    const swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
 
+    // 3. Ambil Messaging & Token
     const messaging = getMessaging(app);
-    const currentToken = await getToken(messaging, {
-      vapidKey: 'BGvUOr-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxbO6GUOhs8dHs0Ro',
-      serviceWorkerRegistration: registration,
+    const token = await getToken(messaging, {
+      vapidKey: 'BGvU0r-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxb06GU0hs8dHs0Ro',
+      serviceWorkerRegistration: swRegistration
     });
 
-    if (currentToken) {
-      alert('BERHASIL! Token FCM: ' + currentToken.substring(0, 10) + '...');
-      return currentToken;
+    if (token) {
+      alert('BERHASIL! Token FCM terbit.');
+      console.log('FCM Token:', token);
+      return token;
+    } else {
+      alert('Gagal mendapatkan token dari Firebase.');
+      return null;
     }
   } catch (err: any) {
-    console.error('Error FCM:', err);
-    alert('Error Firebase: ' + (err?.message || 'Gagal mengambil token'));
+    console.error('Error detail:', err);
+    alert('Detail Error: ' + (err?.message || err));
     return null;
   }
 };
