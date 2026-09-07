@@ -23,7 +23,7 @@ export const requestForToken = async () => {
     
     if (permission === 'granted') {
       const currentToken = await getToken(messaging, { 
-        vapidKey: 'PASTE_VAPID_KEY_PUBLIC_KAMU' 
+        vapidKey: 'BGvUOr-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxbO6GUOhs8dHs0Ro' 
       });
       
       if (currentToken) {
