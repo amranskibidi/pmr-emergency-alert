@@ -1,9 +1,8 @@
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
-// Ganti nilai config di bawah ini dengan Firebase Config dari Console kamu
 firebase.initializeApp({
-  apiKey: "AIzaSyCqK_DYIa5R0UI9IgFbwRZDrDafGA2VN6Y",
+  apiKey: "AIzaSyCqK_DYIa5R0UI9IgFbwrZDrDafGA2VN6Y",
   authDomain: "pmr-emergency-app.firebaseapp.com",
   projectId: "pmr-emergency-app",
   storageBucket: "pmr-emergency-app.firebasestorage.app",
@@ -13,18 +12,12 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Menangani notifikasi saat HP PMR lagi main game / mati layar
 messaging.onBackgroundMessage((payload) => {
-  console.log('Notifikasi Background Diterima:', payload);
-
-  const notificationTitle = payload.notification?.title || 'PANGGILAN PMR!';
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification?.body || 'Ada panggilan darurat/obat masuk!',
-    icon: '/logo-pmr.png',
-    badge: '/logo-pmr.png',
-    vibrate: [500, 100, 500, 100, 500],
-    requireInteraction: true,
-    data: payload.data
+    body: payload.notification.body,
+    icon: '/icon.png'
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
