@@ -34,7 +34,7 @@ export const requestForToken = async () => {
 
     const messaging = getMessaging(app);
     const token = await getToken(messaging, {
-      vapidKey: 'BGvU0r-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxb06GU0hs8dHs0Ro',
+      vapidKey: 'BArH_wRORx4QcDIpne4mu26FPSg1oE80JcKwODz5wcfa-gB-fFwbC9Us7ChONMkGX2UyYKcYsgF71sGNOBJpX-w',
       serviceWorkerRegistration: registration,
     });
 
