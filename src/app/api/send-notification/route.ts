@@ -2,34 +2,22 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { token, title, body, type, kelas } = await request.json();
+    const { type, title, body, kelas, lat, lng } = await request.json();
 
-    if (!token) {
-      return NextResponse.json({ error: 'Token FCM tidak ditemukan' }, { status: 400 });
-    }
+    console.log('Incoming Emergency Alert:', { type, title, body, kelas, lat, lng });
 
-    const fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+    // Logika pengiriman pesan via FCM atau Service dapat diproses di sini
 
-    const payload = {
-      to: token,
-      notification: {
-        title: title || `PANGGILAN PMR - ${kelas}`,
-        body: body || 'Membutuhkan bantuan segera!',
-        icon: '/logo-pmr.png',
-        click_action: '/pmr',
-      },
-      data: {
-        type: type || 'emergency',
-        kelas: kelas || 'Unknown',
-      },
-      priority: 'high',
-    };
-
-    console.log('Sending push notification to PMR device:', payload);
-
-    return NextResponse.json({ success: true, message: 'Notifikasi berhasil dikirim!' });
+    return NextResponse.json({
+      success: true,
+      message: 'Alert processed successfully',
+      data: { type, title, body, kelas, lat, lng },
+    });
   } catch (error) {
-    console.error('Gagal mengirim notifikasi:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('Error in send-notification route:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to process alert' },
+      { status: 500 }
+    );
   }
 }
