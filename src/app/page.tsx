@@ -36,11 +36,12 @@ function EmergencyForm() {
           setStatus('❌ Gagal mengirim panggilan.');
         }
       } catch (err) {
-        console.error(err);
-        setStatus('❌ Error koneksi jaringan.');
-      } font-medium {
-        setLoading(false);
-      }
+       // PERBAIKAN YANG BENAR:
+      console.error(err);
+      setStatus('❌ Error koneksi jaringan.');
+    } finally {
+      setLoading(false);
+    }
     };
 
     if (!navigator.geolocation) {
