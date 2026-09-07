@@ -2,7 +2,6 @@
 
 import React, { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { AlertTriangle, Pill, MapPin, CheckCircle2 } from 'lucide-react';
 
 function EmergencyForm() {
   const searchParams = useSearchParams();
@@ -80,26 +79,23 @@ function EmergencyForm() {
         <button
           onClick={() => sendAlert('darurat', 'PANGGILAN DARURAT!')}
           disabled={loading}
-          className="w-full py-5 px-4 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-lg rounded-2xl transition shadow-lg shadow-red-600/30 flex items-center justify-center gap-3 border border-red-500 disabled:opacity-50"
+          className="w-full py-5 px-4 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-lg rounded-2xl transition shadow-lg shadow-red-600/30 border border-red-500 disabled:opacity-50"
         >
-          <AlertTriangle className="w-7 h-7 animate-pulse" />
-          KEADAAN DARURAT
+          🚨 KEADAAN DARURAT
         </button>
 
         <button
           onClick={() => sendAlert('obat', 'BUTUH OBAT / PERTOLONGAN')}
           disabled={loading}
-          className="w-full py-4 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-base rounded-2xl transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-3 border border-emerald-500 disabled:opacity-50"
+          className="w-full py-4 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-base rounded-2xl transition shadow-lg shadow-emerald-600/20 border border-emerald-500 disabled:opacity-50"
         >
-          <Pill className="w-6 h-6" />
-          KEBUTUHAN OBAT / P3K
+          💊 KEBUTUHAN OBAT / P3K
         </button>
       </div>
 
       {status && (
-        <div className="p-3 bg-slate-900/80 border border-slate-700 rounded-xl text-xs text-amber-400 font-medium flex items-center justify-center gap-2">
-          <MapPin className="w-4 h-4 animate-bounce text-amber-400" />
-          {status}
+        <div className="p-3 bg-slate-900/80 border border-slate-700 rounded-xl text-xs text-amber-400 font-medium">
+          📍 {status}
         </div>
       )}
     </div>
