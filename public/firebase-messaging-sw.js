@@ -14,10 +14,16 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification.title || 'PMR Emergency Alert';
+  const notificationTitle = payload.notification?.title || 'PANGGILAN DARURAT PMR';
   const notificationOptions = {
-    body: payload.notification.body || 'Ada panggilan darurat!',
-    icon: '/logo-pmr.png'
+    body: payload.notification?.body || 'Ada situasi darurat! Segera periksa lokasi.',
+    icon: '/logo-pmr.png',
+    badge: '/logo-pmr.png',
+    vibrate: [200, 100, 200, 100, 200, 100, 400], // Getar panjang pola darurat
+    tag: 'emergency-alert',
+    renotify: true,
+    requireInteraction: true, // Notifikasi tidak akan hilang sampai diklik
+    silent: false
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
