@@ -16,38 +16,30 @@ export const requestForToken = async () => {
   try {
     const supported = await isSupported();
     if (!supported) {
-      console.warn('Browser tidak mendukung Push Notification FCM');
-      return null;
-    }
-
-    if (Notification.permission === 'denied') {
-      alert('Izin Notifikasi di-Block oleh Browser! Mohon klik ikon Gembok di baris URL atas untuk mengubah izin menjadi Allow.');
+      alert('Browser HP ini tidak mendukung fitur FCM Push Notification.');
       return null;
     }
 
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
-      alert('Izin notifikasi tidak diberikan.');
+      alert('Izin Notifikasi ditolak di browser. Silahkan reset izin situs di setelan Chrome.');
       return null;
     }
 
-    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-
     const messaging = getMessaging(app);
+    // MASUKKAN VAPID KEY KAMU DI BAWAH INI:
     const currentToken = await getToken(messaging, {
-      vapidKey: 'BGvUOr-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxbO6GUOhs8dHs0Ro',
-      serviceWorkerRegistration: registration,
+      vapidKey: 'BGvUOr-SksdgdUYPy7gLPinmJytJfuuasJpK0fr6Dm1sb2L3jfj5ip0FY9HvucGUiF4IoQVxbO6GUOhs8dHs0Ro'
     });
 
     if (currentToken) {
-      console.log('FCM Token Berhasil Didapat:', currentToken);
+      alert('SUCCESS! Notifikasi PMR Berhasil Diaktifkan 🎉');
       return currentToken;
-    } else {
-      console.warn('Tidak ada registration token yang tersedia.');
-      return null;
     }
+    return null;
   } catch (err) {
-    console.error('Error saat mengambil FCM Token:', err);
+    console.error('Error FCM:', err);
+    alert('Gagal mengambil token FCM. Pastikan VAPID Key sudah benar.');
     return null;
   }
 };
